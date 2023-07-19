@@ -1,13 +1,21 @@
 import { initializeApp } from "firebase/app";
 
+const apiKey = import.meta.env.VITE_API_KEY;
+const authDomain = import.meta.env.VITE_AUTH_DOMAIN;
+const projectId = import.meta.env.VITE_PROJECT_ID;
+const storageBucket = import.meta.env.VITE_STORAGE_BUCKET;
+const messagingSenderId = import.meta.env.VITE_MESSAGING_SENDER_ID;
+const appId = import.meta.env.VITE_APP_ID;
+const measurementId = import.meta.env.VITE_MEASUREMENT_ID;
+
 const firebaseConfig = {
-    apiKey: "AIzaSyAyyin3ZyFGKmEreoYVGcg4V_3-3QApsJQ",
-    authDomain: "fir-tutorial-9e2a7.firebaseapp.com",
-    projectId: "fir-tutorial-9e2a7",
-    storageBucket: "fir-tutorial-9e2a7.appspot.com",
-    messagingSenderId: "917553891320",
-    appId: "1:917553891320:web:22ee9d1f933a61bb80b80d",
-    measurementId: "G-DHZQBJFLML"
+    apiKey: apiKey,
+    authDomain: authDomain,
+    projectId: projectId,
+    storageBucket: storageBucket,
+    messagingSenderId: messagingSenderId,
+    appId: appId,
+    measurementId: measurementId
 };
 
 export const app = initializeApp(firebaseConfig);
