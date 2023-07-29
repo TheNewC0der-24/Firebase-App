@@ -1,35 +1,50 @@
+import React, { useState, useEffect } from 'react';
 import {
   Routes,
   Route,
-  Navigate
+  Navigate,
+  useLocation
 } from 'react-router-dom';
-
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-
 
 import Login from './Components/Login';
 import Register from './Components/Register';
 import Home from './Pages/Home';
+import LoadingScreen from './LoadingScreen/LoadingScreen';
 
 function App() {
 
-  const auth = getAuth();
+  const location = useLocation();
 
-  onAuthStateChanged(auth, (user) => {
-    if (!user) {
-      return <Navigate to="/login" replace />;
-    } else {
-      return <Navigate to="/home" replace />;
-    }
-  });
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [location]);
 
   return (
-    <Routes>
-      <Route path='/' element={<Navigate to="/register" replace />} />
-      <Route path='/register' element={<Register />} />
-      <Route path='/login' element={<Login />} />
-      <Route path='/home' element={<Home />} />
-    </Routes>
+    <React.Fragment>
+      {
+        isLoading ? (
+          <LoadingScreen />
+        ) : (
+          <Routes>
+            <Route path='/' element={<Navigate to="/register" replace />} />
+            <Route path='/register' element={<Register />} />
+            <Route path='/login' element={<Login />} />
+            <Route path='/home' element={
+              localStorage.getItem('access_token') || localStorage.getItem('email') !== null
+                ? <Home />
+                : <Navigate to="/login" replace />
+            } />
+          </Routes>
+        )
+      }
+    </React.Fragment>
   )
 }
 

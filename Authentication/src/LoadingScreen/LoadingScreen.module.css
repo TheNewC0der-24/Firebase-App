@@ -1,0 +1,14 @@
+  .loading {
+      max-width: 500px;
+      width: auto;
+      height: auto;
+  }
+
+  .loaderContainer {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-color: #eaeeef;
+      height: 100vh;
+      width: 100vw;
+  }
