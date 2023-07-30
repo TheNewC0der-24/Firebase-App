@@ -4,6 +4,6 @@
   base ="Authentication/"
 
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
+  from = "Authentication/*"
+  to = "Authentication/index.html"
   status = 200
