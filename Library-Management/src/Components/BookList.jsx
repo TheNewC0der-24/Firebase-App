@@ -60,25 +60,31 @@ const BookList = ({ getBookId }) => {
                     </Thead>
                     <Tbody>
                         {
-                            books.map((book) => (
-                                <Tr key={book.id}>
-                                    <Td>{book.title}</Td>
-                                    <Td>{book.author}</Td>
-                                    <Td>
-                                        <Tag colorScheme={book.status === "Available" ? "green" : "red"}>
-                                            {book.status}
-                                        </Tag>
-                                    </Td>
-                                    <Td>
-                                        <Button colorScheme="yellow" variant="solid" mr={3} onClick={(e) => getBookId(book.id)}>
-                                            <AiFillEdit style={{ marginRight: "0.2rem" }} /> Edit
-                                        </Button>
-                                        <Button colorScheme="red" variant="solid" onClick={(e) => deleteHandle(book.id)}>
-                                            <FaTrash style={{ marginRight: "0.2rem" }} /> Delete
-                                        </Button>
-                                    </Td>
-                                </Tr>
-                            ))
+                            books.length === 0 ?
+                                (
+                                    <Tr>
+                                        <Td colSpan="4">No Books Available</Td>
+                                    </Tr>
+                                ) :
+                                books.map((book) => (
+                                    <Tr key={book.id}>
+                                        <Td>{book.title}</Td>
+                                        <Td>{book.author}</Td>
+                                        <Td>
+                                            <Tag colorScheme={book.status === "Available" ? "green" : "red"}>
+                                                {book.status}
+                                            </Tag>
+                                        </Td>
+                                        <Td>
+                                            <Button colorScheme="yellow" variant="solid" mr={3} onClick={(e) => getBookId(book.id)}>
+                                                <AiFillEdit style={{ marginRight: "0.2rem" }} /> Edit
+                                            </Button>
+                                            <Button colorScheme="red" variant="solid" onClick={(e) => deleteHandle(book.id)}>
+                                                <FaTrash style={{ marginRight: "0.2rem" }} /> Delete
+                                            </Button>
+                                        </Td>
+                                    </Tr>
+                                ))
                         }
                     </Tbody>
                 </Table>
