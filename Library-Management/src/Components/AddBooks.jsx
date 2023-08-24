@@ -18,7 +18,7 @@ import {
 import { IoLibrary } from 'react-icons/io5';
 import BookDataService from '../Service/BookServices';
 
-const AddBooks = () => {
+const AddBooks = ({ id, setBookId }) => {
 
     const [title, setTitle] = useState("");
     const [author, setAuthor] = useState("");
@@ -41,8 +41,15 @@ const AddBooks = () => {
         }
 
         try {
-            await BookDataService.addBooks(newBook);
-            setMessage({ error: false, msg: "Book added successfully" });
+            if (id !== undefined && id !== "") {
+                await BookDataService.updateBook(id, newBook);
+                setMessage({ error: false, msg: "Book updated successfully" });
+                setBookId("");
+            }
+            else {
+                await BookDataService.addBooks(newBook);
+                setMessage({ error: false, msg: "Book added successfully" });
+            }
         } catch (error) {
             setMessage({ error: true, msg: error.message });
         }
@@ -63,6 +70,25 @@ const AddBooks = () => {
             return () => clearTimeout(timeout);
         }
     }, [message]);
+
+    const editHandler = async (id) => {
+        setMessage("");
+        try {
+            const docSnap = await BookDataService.getBook(id);
+            setTitle(docSnap.data().title);
+            setAuthor(docSnap.data().author);
+            setStatus(docSnap.data().status);
+        } catch (error) {
+            setMessage({ error: true, msg: error.message });
+        }
+    }
+
+    useEffect(() => {
+        console.log(id);
+        if (id !== undefined && id !== "") {
+            editHandler(id);
+        }
+    }, [id]);
 
     return (
         <React.Fragment>
@@ -106,7 +132,7 @@ const AddBooks = () => {
                 <Divider />
                 <CardFooter>
                     <Button onClick={handleSubmit} sx={{ width: "100%" }} type="Submit" colorScheme="blue" variant="solid">
-                        Add Book
+                        {id !== undefined && id !== "" ? "Edit" : "Add"} Book
                     </Button>
                 </CardFooter>
             </Card>
