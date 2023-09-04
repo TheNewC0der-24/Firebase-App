@@ -14,65 +14,60 @@ import {
     AlertIcon,
     SimpleGrid,
     Heading,
-    Text
+    Text,
+    FormHelperText,
+    FormControl
 } from '@chakra-ui/react';
 
 import { HiOutlineMail } from 'react-icons/hi';
 import { RiLockPasswordLine } from 'react-icons/ri';
 
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { useAuth } from '../Context/AuthContext';
 
 const Register = () => {
 
-    let auth = getAuth();
-
     const navigate = useNavigate();
 
-    const [show, setShow] = useState(false);
-    const [data, setData] = useState({});
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
-    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const handleClickShowPassword = () => setShowPassword((prev) => !prev);
+    const handleClickShowConfirmPassword = () => setShowConfirmPassword((prev) => !prev);
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
+
+    const { signup } = useAuth();
+
     const [showErrorAlert, setShowErrorAlert] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleClick = () => setShow(!show);
 
-    const handleInput = (event) => {
-        const input = { [event.target.name]: event.target.value };
-        setData({ ...data, ...input });
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    const handleSubmit = () => {
-        createUserWithEmailAndPassword(auth, data.email, data.password)
-            .then((response) => {
-                console.log(response);
-                setShowSuccessAlert(true);
-
-                setTimeout(() => {
-                    setShowSuccessAlert(false);
-                    navigate('/login');
-                }, 3000);
-            })
-            .catch((error) => {
-                setShowErrorAlert(true);
-                setErrorMessage(error.message);
-
-                setTimeout(() => {
-                    setShowErrorAlert(false);
-                }, 3000);
-            })
+        try {
+            setErrorMessage('');
+            setLoading(true);
+            await signup(email, password);
+            navigate('/');
+        } catch (error) {
+            setErrorMessage(error.message);
+            setShowErrorAlert(true);
+            setTimeout(() => {
+                setShowErrorAlert(false);
+                setErrorMessage('');
+            }, 3000);
+        }
+        setLoading(false);
     }
 
     return (
         <Container maxW="4xl">
 
             <Box sx={{ margin: "2rem 0", height: "50px" }}>
-                {showSuccessAlert && (
-                    <Alert status='success'>
-                        <AlertIcon />
-                        <span>User Register successfully</span>
-                    </Alert>
-                )}
 
                 {showErrorAlert && (
                     <Alert status='error'>
@@ -83,7 +78,7 @@ const Register = () => {
             </Box>
 
             <Box>
-                <SimpleGrid minChildWidth='250px' spacing='40px'>
+                <SimpleGrid minChildWidth='300px' spacing='40px'>
                     <Box bgColor="teal" sx={{ padding: "3rem" }}>
                         <Heading as="h3" color="white" textAlign="center">
                             Welcome Back!
@@ -103,55 +98,89 @@ const Register = () => {
                             Login
                         </Button>
                     </Box>
-                    <Box p={3}>
-                        <Heading as="h3" color="teal" textAlign="center" sx={{ marginBottom: "2rem" }}>
-                            Create Account
-                        </Heading>
+                    <form onSubmit={handleSubmit}>
+                        <Box p={3}>
+                            <Heading as="h3" color="teal" textAlign="center" sx={{ marginBottom: "2rem" }}>
+                                Create Account
+                            </Heading>
 
-                        <Stack spacing={3}>
-                            <InputGroup>
-                                <InputLeftElement pointerEvents='none'>
-                                    <HiOutlineMail color='teal' />
-                                </InputLeftElement>
-                                <Input
-                                    type='email'
-                                    placeholder='Enter email'
-                                    focusBorderColor='teal'
-                                    name='email'
-                                    onChange={(event) => handleInput(event)}
-                                />
-                            </InputGroup>
-                            <InputGroup>
-                                <InputLeftElement pointerEvents='none'>
-                                    <RiLockPasswordLine color='teal' />
-                                </InputLeftElement>
-                                <Input
-                                    pr='4.5rem'
-                                    type={show ? 'text' : 'password'}
-                                    placeholder='Enter password'
-                                    focusBorderColor='teal'
-                                    name='password'
-                                    onChange={(event) => handleInput(event)}
-                                />
-                                <InputRightElement width='4.5rem'>
-                                    <Button h='1.75rem' size='sm' onClick={handleClick}>
-                                        {show ? 'Hide' : 'Show'}
-                                    </Button>
-                                </InputRightElement>
-                            </InputGroup>
-                        </Stack>
-                        <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-                            <Button
-                                colorScheme='teal'
-                                onClick={handleSubmit}
-                            >
-                                Sign Up
-                            </Button>
+                            <Stack spacing={5}>
+                                <InputGroup>
+                                    <InputLeftElement pointerEvents='none'>
+                                        <HiOutlineMail color='teal' />
+                                    </InputLeftElement>
+                                    <Input
+                                        type='email'
+                                        placeholder='Enter email'
+                                        focusBorderColor='teal'
+                                        name='email'
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        required
+                                    />
+                                </InputGroup>
+                                <InputGroup>
+                                    <InputLeftElement pointerEvents='none'>
+                                        <RiLockPasswordLine color='teal' />
+                                    </InputLeftElement>
+                                    <Input
+                                        pr='4.5rem'
+                                        type={showPassword ? 'text' : 'password'}
+                                        placeholder='Enter password'
+                                        focusBorderColor='teal'
+                                        name='password'
+                                        value={password}
+                                        onChange={(e) => setPassword(e.target.value)}
+                                        required
+                                    />
+                                    <InputRightElement width='4.5rem'>
+                                        <Button h='1.75rem' size='sm' onClick={handleClickShowPassword}>
+                                            {showPassword ? 'Hide' : 'Show'}
+                                        </Button>
+                                    </InputRightElement>
+                                </InputGroup>
+                                <FormControl>
+                                    <InputGroup>
+                                        <InputLeftElement pointerEvents='none'>
+                                            <RiLockPasswordLine color='teal' />
+                                        </InputLeftElement>
+                                        <Input
+                                            pr='4.5rem'
+                                            type={showConfirmPassword ? 'text' : 'password'}
+                                            placeholder='Confirm password'
+                                            focusBorderColor='teal'
+                                            name='password'
+                                            value={confirmPassword}
+                                            onChange={(e) => setConfirmPassword(e.target.value)}
+                                            required
+                                        />
+
+                                        <InputRightElement width='4.5rem'>
+                                            <Button h='1.75rem' size='sm' onClick={handleClickShowConfirmPassword}>
+                                                {showConfirmPassword ? 'Hide' : 'Show'}
+                                            </Button>
+                                        </InputRightElement>
+                                    </InputGroup>
+                                    {
+                                        password !== confirmPassword &&
+                                        <FormHelperText textColor="red.400">Passwords should match</FormHelperText>
+                                    }
+                                </FormControl>
+                            </Stack>
+                            <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
+                                <Button
+                                    colorScheme='teal'
+                                    type='submit'
+                                    isLoading={loading}
+                                >
+                                    Sign Up
+                                </Button>
+                            </Box>
                         </Box>
-                    </Box>
+                    </form>
                 </SimpleGrid>
             </Box>
-        </Container>
+        </Container >
     )
 }
 
