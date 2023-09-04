@@ -16,6 +16,8 @@ import { SiFirebase } from 'react-icons/si';
 
 import logo from '../assets/logo.png';
 
+import { useAuth } from '../Context/AuthContext';
+
 const Home = () => {
 
     const navigate = useNavigate();
@@ -23,10 +25,16 @@ const Home = () => {
     const email = localStorage.getItem("email");
     const formattedEmail = email?.replace(/"/g, "");
 
-    const handleLogout = () => {
-        localStorage.removeItem("email");
-        localStorage.removeItem("access_token");
-        navigate("/login");
+    const { logout, currentUser } = useAuth();
+
+    const handleLogout = async () => {
+        try {
+            await logout();
+            localStorage.removeItem("email");
+            navigate('/login');
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
@@ -46,7 +54,7 @@ const Home = () => {
                         />
                         <Box mt={5}>
                             <Heading size='md'>
-                                Hey {formattedEmail} <span role='img'>👋</span>
+                                Hey {formattedEmail || currentUser.email} <span role='img'>👋</span>
                             </Heading>
                             <Heading size='md'>
                                 Welcome to the our app
