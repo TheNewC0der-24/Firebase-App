@@ -47,6 +47,7 @@ const Login = () => {
     const handleLoginWithGoogle = () => {
         signInWithPopup(auth, googleProvider)
             .then((response) => {
+                localStorage.setItem('email', JSON.stringify(response.user.email));
                 navigate('/home');
             })
             .catch((error) => {
