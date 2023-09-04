@@ -43,12 +43,11 @@ const Login = () => {
 
     const handleClick = () => setShow(!show);
 
-
     const handleLoginWithGoogle = () => {
         signInWithPopup(auth, googleProvider)
             .then((response) => {
                 localStorage.setItem('email', JSON.stringify(response.user.email));
-                navigate('/home');
+                navigate('/');
             })
             .catch((error) => {
                 setShowErrorAlert(true);
@@ -68,7 +67,7 @@ const Login = () => {
             setErrorMessage('');
             setLoading(true);
             await login(email, password);
-            navigate('/home');
+            navigate('/');
         } catch (error) {
             setShowErrorAlert(true);
             setErrorMessage(error.message);
